@@ -1,16 +1,30 @@
 import express from "express";
 import dotenv from "dotenv";
+
+// db and authenticate
+import { connectDB } from "./db/connect";
+
+// middleware
 import { errorHandlerMiddleware } from "./middleware/errorHandler";
 import { notFoundMiddleware } from "./middleware/notFound";
-import { connectDB } from "./db/connect";
+
+// routers
+import { authRouter } from "./routes/authRoutes";
+import { jobsRouter } from "./routes/jobsRoutes";
+import { getApiPath } from "./utils/pathUtils";
+
 dotenv.config();
 
 const app = express();
 
+app.use(express.json());
+
 app.get("/", (req, res) => {
-  throw new Error("Con cac");
   res.send("Welcome!");
 });
+
+app.use(getApiPath("/auth"), authRouter);
+app.use(getApiPath("/jobs"), jobsRouter);
 
 // not found will below all the REST
 app.use(notFoundMiddleware);
