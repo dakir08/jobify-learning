@@ -7,11 +7,11 @@ type State = {
   alertType: string;
 };
 
-type ReducerAction = {
+export type ReducerAction = {
   type: Action;
 };
 
-export const reducer = (state: State, action: any): State => {
+export const reducer = (state: State, action: ReducerAction): State => {
   switch (action.type) {
     case Action.DISPLAY_ALERT:
       return {
@@ -19,6 +19,14 @@ export const reducer = (state: State, action: any): State => {
         showAlert: true,
         alertText: "Please provide all values!",
         alertType: "danger",
+      };
+
+    case Action.CLEAR_ALERT:
+      return {
+        ...state,
+        showAlert: false,
+        alertType: "",
+        alertText: "",
       };
 
     default:

@@ -4,8 +4,8 @@ import {
   ReactNode,
   useContext,
   useReducer,
-  useState,
 } from "react";
+import { DispatchContext } from "./dispatchContext";
 import { reducer } from "./reducer";
 
 export const initialState = {
@@ -22,11 +22,11 @@ export const AppProvider: FunctionComponent<{ children: ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const displayAlert = () => {
-    dispatch({type:})
-  }
-
-  return <AppContext.Provider value={state}>{children}</AppContext.Provider>;
+  return (
+    <DispatchContext.Provider value={dispatch}>
+      <AppContext.Provider value={state}>{children}</AppContext.Provider>
+    </DispatchContext.Provider>
+  );
 };
 
 export const useAppContext = () => {

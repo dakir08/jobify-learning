@@ -1,10 +1,14 @@
 import { FunctionComponent } from "react";
+import { useAppContext } from "../context/appContext";
 
 export interface AlertProps {
   show: boolean;
-  text: string;
 }
 
-export const Alert: FunctionComponent<AlertProps> = ({ show, text }) => {
-  return show ? <div className={`alert alert-danger`}>{text}</div> : null;
+export const Alert: FunctionComponent<AlertProps> = ({ show }) => {
+  const { alertType, alertText } = useAppContext();
+
+  return show ? (
+    <div className={`alert alert-${alertType}`}>{alertText}</div>
+  ) : null;
 };

@@ -3,7 +3,9 @@ import { Alert } from "../components/Alert";
 import { FormRow } from "../components/FormRow";
 import { Logo } from "../components/wrappers/Logo";
 import { RegisterPage } from "../components/wrappers/RegisterPage";
+import { Action } from "../context/actions";
 import { useAppContext } from "../context/appContext";
+import { useDispatch } from "../context/dispatchContext";
 
 const initialState = {
   name: "",
@@ -16,17 +18,36 @@ export const Register: FunctionComponent = () => {
   const [values, setValues] = useState(initialState);
 
   const { isLoading, showAlert } = useAppContext();
+  const dispatch = useDispatch();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
+    if (showAlert) {
+      clearAlert();
+    }
+
+    setValues({ ...values, [e.currentTarget.name]: e.currentTarget.value });
   };
 
   const toggleMember = () => {
     setValues({ ...values, isMember: !values.isMember });
   };
 
+  const displayAlert = () => {
+    dispatch({ type: Action.DISPLAY_ALERT });
+  };
+
+  const clearAlert = () => {
+    dispatch({ type: Action.CLEAR_ALERT });
+  };
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
+
+    const { name, email, password, isMember } = values;
+
+    if (!email || !password || (!isMember && !name)) {
+      displayAlert();
+    }
   };
 
   return (
@@ -34,7 +55,7 @@ export const Register: FunctionComponent = () => {
       <form className="form" onSubmit={onSubmit}>
         <Logo />
         <h3>{values.isMember ? "Login" : "Register"}</h3>
-        <Alert show={showAlert} text="Alert" />
+        <Alert show={showAlert} />
         {!values.isMember && (
           <FormRow
             name="name"
