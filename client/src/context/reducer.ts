@@ -7,11 +7,11 @@ type State = {
   alertType: string;
 };
 
-export type ReducerAction = {
+export type AppReducerAction = {
   type: Action;
 };
 
-export const reducer = (state: State, action: ReducerAction): State => {
+export const reducer = (state: State, action: AppReducerAction): State => {
   switch (action.type) {
     case Action.DISPLAY_ALERT:
       return {
