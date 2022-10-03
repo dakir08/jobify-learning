@@ -10,6 +10,12 @@ export const register = async (req: Request, res: Response) => {
     throw new CustomApiError("please provide all values");
   }
 
+  const userAlreadyExists = await User.findOne({ email });
+
+  if (!!userAlreadyExists) {
+    throw new CustomApiError("Email already in use");
+  }
+
   const user = await User.create(req.body);
 
   res.status(StatusCodes.CREATED).json({ user });
