@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { User } from "../../models/User";
+import { User } from "../models/User";
 import { CustomApiError } from "../errors/customApiError";
 
 export const register = async (req: Request, res: Response) => {
@@ -18,7 +18,9 @@ export const register = async (req: Request, res: Response) => {
 
   const user = await User.create(req.body);
 
-  res.status(StatusCodes.CREATED).json({ user });
+  const token = user.createJwt();
+
+  res.status(StatusCodes.CREATED).json({ token });
 };
 
 export const login = async (req: Request, res: Response) => {
