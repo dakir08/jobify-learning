@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../../models/User";
-import { CustomApiError } from "../utils/customApiError";
+import { CustomApiError } from "../errors/customApiError";
 
 export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
