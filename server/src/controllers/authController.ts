@@ -1,7 +1,18 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import { User } from "../../models/User";
+import { CustomApiError } from "../utils/customApiError";
 
 export const register = async (req: Request, res: Response) => {
-  res.send("register user");
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    throw new CustomApiError("please provide all values");
+  }
+
+  const user = await User.create(req.body);
+
+  res.status(StatusCodes.CREATED).json({ user });
 };
 
 export const login = async (req: Request, res: Response) => {

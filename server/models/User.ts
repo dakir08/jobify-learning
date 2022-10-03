@@ -9,7 +9,7 @@ export interface User {
   location: string;
 }
 
-const UserSchema = new Schema<User>({
+const schema = new Schema<User>({
   name: {
     type: String,
     required: [true, "Please provide name"],
@@ -45,4 +45,4 @@ const UserSchema = new Schema<User>({
   },
 });
 
-export const UserModel = model("User", UserSchema);
+export const User = model("User", schema);
