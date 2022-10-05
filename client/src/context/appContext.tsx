@@ -6,13 +6,15 @@ import {
   useReducer,
 } from "react";
 import { DispatchContext } from "./dispatchContext";
-import { reducer } from "./reducer";
+import { reducer, State } from "./reducer";
 
-export const initialState = {
+export const initialState: State = {
   isLoading: false,
   showAlert: false,
   alertText: "",
   alertType: "",
+  user: null,
+  token: null,
 };
 
 const AppContext = createContext(initialState);

@@ -20,7 +20,15 @@ export const register = async (req: Request, res: Response) => {
 
   const token = user.createJwt();
 
-  res.status(StatusCodes.CREATED).json({ token });
+  res.status(StatusCodes.CREATED).json({
+    user: {
+      name: user.name,
+      email: user.email,
+      lastName: user.lastName,
+      location: user.location,
+    },
+    token,
+  });
 };
 
 export const login = async (req: Request, res: Response) => {

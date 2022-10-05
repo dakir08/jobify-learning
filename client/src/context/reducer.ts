@@ -1,14 +1,19 @@
+import { User } from "../models/User";
+import { Nullable } from "../types/common";
 import { Action } from "./actions";
 
-type State = {
+export type State = {
   isLoading: boolean;
   showAlert: boolean;
   alertText: string;
   alertType: string;
+  user: Nullable<User>;
+  token: Nullable<string>;
 };
 
 export type AppReducerAction = {
   type: Action;
+  payload?: any;
 };
 
 export const reducer = (state: State, action: AppReducerAction): State => {
@@ -29,7 +34,30 @@ export const reducer = (state: State, action: AppReducerAction): State => {
         alertText: "",
       };
 
+    case Action.REGISTER_USER_BEGIN:
+      return { ...state, isLoading: true };
+
+    case Action.REGISTER_USER_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        token: action.payload.token,
+        user: action.payload.user,
+        showAlert: true,
+        alertType: "success",
+        alertText: "User Created! Redirecting...",
+      };
+
+    case Action.REGISTER_USER_ERROR:
+      return {
+        ...state,
+        isLoading: false,
+        showAlert: true,
+        alertType: "danger",
+        alertText: action.payload.msg,
+      };
+
     default:
-      return state;
+      throw new Error(`no such action: ${action.type}`);
   }
 };

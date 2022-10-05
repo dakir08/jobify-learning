@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ChangeEvent, FormEvent, FunctionComponent, useState } from "react";
 import { Alert } from "../components/Alert";
 import { FormRow } from "../components/FormRow";
@@ -6,6 +7,7 @@ import { RegisterPage } from "../components/wrappers/RegisterPage";
 import { Action } from "../context/actions";
 import { useAppContext } from "../context/appContext";
 import { useDispatch } from "../context/dispatchContext";
+import { RegiserUser } from "../models/User";
 
 const initialState = {
   name: "",
@@ -37,7 +39,38 @@ export const Register: FunctionComponent = () => {
   };
 
   const clearAlert = () => {
-    dispatch({ type: Action.CLEAR_ALERT });
+    setTimeout(() => dispatch({ type: Action.CLEAR_ALERT }), 3000);
+  };
+
+  const registerUser = async (currentUser: RegiserUser) => {
+    dispatch({ type: Action.REGISTER_USER_BEGIN });
+
+    try {
+      const response = await axios.post<{
+        token: string;
+        user: {
+          name: string;
+          email: string;
+          lastName: string;
+          location: string;
+        };
+      }>("http://localhost:5000/api/v1/auth/register", currentUser);
+      const { token, user } = response.data;
+
+      dispatch({
+        type: Action.REGISTER_USER_SUCCESS,
+        payload: { user, token },
+      });
+      // Local storage later
+    } catch (error: any) {
+      console.log(error);
+      dispatch({
+        type: Action.REGISTER_USER_ERROR,
+        payload: { msg: error.response.data.msg },
+      });
+    }
+
+    clearAlert();
   };
 
   const onSubmit = (e: FormEvent) => {
@@ -48,6 +81,14 @@ export const Register: FunctionComponent = () => {
     if (!email || !password || (!isMember && !name)) {
       displayAlert();
     }
+    const currentUser = { name, email, password };
+
+    if (isMember) {
+      console.log("already a member");
+      return;
+    }
+
+    registerUser(currentUser);
   };
 
   return (
@@ -76,7 +117,7 @@ export const Register: FunctionComponent = () => {
           type="password"
           value={values.password}
         />
-        <button type={"submit"} className="btn btn-block">
+        <button type={"submit"} className="btn btn-block" disabled={isLoading}>
           submit
         </button>
         <p>
