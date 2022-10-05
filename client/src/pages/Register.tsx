@@ -1,5 +1,12 @@
 import axios from "axios";
-import { ChangeEvent, FormEvent, FunctionComponent, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  FunctionComponent,
+  useEffect,
+  useState,
+} from "react";
+import { useNavigate } from "react-router-dom";
 import { Alert } from "../components/Alert";
 import { FormRow } from "../components/FormRow";
 import { Logo } from "../components/wrappers/Logo";
@@ -8,6 +15,7 @@ import { Action } from "../context/actions";
 import { useAppContext } from "../context/appContext";
 import { useDispatch } from "../context/dispatchContext";
 import { RegiserUser } from "../models/User";
+import { addUserToLocalStorage } from "../utils/localStorageUtils";
 
 const initialState = {
   name: "",
@@ -19,8 +27,15 @@ const initialState = {
 export const Register: FunctionComponent = () => {
   const [values, setValues] = useState(initialState);
 
-  const { isLoading, showAlert } = useAppContext();
-  const dispatch = useDispatch();
+  const { isLoading, showAlert, token } = useAppContext();
+  const { clearAlert, displayAlert, registerUser } = useRegisterLogic();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      setTimeout(() => navigate("/"), 3000);
+    }
+  }, [token]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (showAlert) {
@@ -32,45 +47,6 @@ export const Register: FunctionComponent = () => {
 
   const toggleMember = () => {
     setValues({ ...values, isMember: !values.isMember });
-  };
-
-  const displayAlert = () => {
-    dispatch({ type: Action.DISPLAY_ALERT });
-  };
-
-  const clearAlert = () => {
-    setTimeout(() => dispatch({ type: Action.CLEAR_ALERT }), 3000);
-  };
-
-  const registerUser = async (currentUser: RegiserUser) => {
-    dispatch({ type: Action.REGISTER_USER_BEGIN });
-
-    try {
-      const response = await axios.post<{
-        token: string;
-        user: {
-          name: string;
-          email: string;
-          lastName: string;
-          location: string;
-        };
-      }>("http://localhost:5000/api/v1/auth/register", currentUser);
-      const { token, user } = response.data;
-
-      dispatch({
-        type: Action.REGISTER_USER_SUCCESS,
-        payload: { user, token },
-      });
-      // Local storage later
-    } catch (error: any) {
-      console.log(error);
-      dispatch({
-        type: Action.REGISTER_USER_ERROR,
-        payload: { msg: error.response.data.msg },
-      });
-    }
-
-    clearAlert();
   };
 
   const onSubmit = (e: FormEvent) => {
@@ -129,4 +105,50 @@ export const Register: FunctionComponent = () => {
       </form>
     </RegisterPage>
   );
+};
+
+const useRegisterLogic = () => {
+  const dispatch = useDispatch();
+
+  const displayAlert = () => {
+    dispatch({ type: Action.DISPLAY_ALERT });
+  };
+
+  const clearAlert = () => {
+    setTimeout(() => dispatch({ type: Action.CLEAR_ALERT }), 3000);
+  };
+
+  const registerUser = async (currentUser: RegiserUser) => {
+    dispatch({ type: Action.REGISTER_USER_BEGIN });
+
+    try {
+      const response = await axios.post<{
+        token: string;
+        user: {
+          name: string;
+          email: string;
+          lastName: string;
+          location: string;
+        };
+      }>("http://localhost:5000/api/v1/auth/register", currentUser);
+      const { token, user } = response.data;
+
+      dispatch({
+        type: Action.REGISTER_USER_SUCCESS,
+        payload: { user, token },
+      });
+
+      addUserToLocalStorage({ user, token });
+    } catch (error: any) {
+      console.log(error);
+      dispatch({
+        type: Action.REGISTER_USER_ERROR,
+        payload: { msg: error.response.data.msg },
+      });
+    }
+
+    clearAlert();
+  };
+
+  return { displayAlert, clearAlert, registerUser };
 };

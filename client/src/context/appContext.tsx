@@ -8,13 +8,16 @@ import {
 import { DispatchContext } from "./dispatchContext";
 import { reducer, State } from "./reducer";
 
+const token = localStorage.getItem("token");
+const user = localStorage.getItem("user");
+
 export const initialState: State = {
   isLoading: false,
   showAlert: false,
   alertText: "",
   alertType: "",
-  user: null,
-  token: null,
+  user: user ? JSON.parse(user) : null,
+  token: token ?? null,
 };
 
 const AppContext = createContext(initialState);
