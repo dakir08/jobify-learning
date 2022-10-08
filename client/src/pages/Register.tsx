@@ -18,8 +18,8 @@ import { addUserToLocalStorage } from "../utils/localStorageUtils";
 
 const initialState = {
   name: "",
-  email: "",
-  password: "",
+  email: "admin@gmail.com",
+  password: "secret",
   isMember: true,
 };
 
@@ -32,7 +32,7 @@ export const Register: FunctionComponent = () => {
 
   useEffect(() => {
     if (token) {
-      setTimeout(() => navigate("/"), 3000);
+      navigate("/");
     }
   }, [token]);
 
@@ -122,7 +122,7 @@ const useSetupUserLogic = () => {
   };
 
   const clearAlert = () => {
-    setTimeout(() => dispatch({ type: Action.CLEAR_ALERT }), 3000);
+    dispatch({ type: Action.CLEAR_ALERT });
   };
 
   const authenticateUser = async ({
@@ -160,8 +160,6 @@ const useSetupUserLogic = () => {
         payload: { msg: error.response.data.msg },
       });
     }
-
-    clearAlert();
   };
 
   return { displayAlert, clearAlert, authenticateUser };

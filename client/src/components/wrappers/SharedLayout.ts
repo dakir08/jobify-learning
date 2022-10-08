@@ -1,6 +1,6 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
-const Wrapper = styled.section`
+export const SharedLayoutWrapper = styled.section`
   .dashboard {
     display: grid;
     grid-template-columns: 1fr;
@@ -18,5 +18,4 @@ const Wrapper = styled.section`
       width: 90%;
     }
   }
-`
-export default Wrapper
+`;
