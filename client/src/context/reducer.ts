@@ -34,10 +34,10 @@ export const reducer = (state: State, action: AppReducerAction): State => {
         alertText: "",
       };
 
-    case Action.REGISTER_USER_BEGIN:
+    case Action.AUTHENTICATE_USER_BEGIN:
       return { ...state, isLoading: true };
 
-    case Action.REGISTER_USER_SUCCESS:
+    case Action.AUTHENTICATE_USER_SUCCESS:
       return {
         ...state,
         isLoading: false,
@@ -45,10 +45,10 @@ export const reducer = (state: State, action: AppReducerAction): State => {
         user: action.payload.user,
         showAlert: true,
         alertType: "success",
-        alertText: "User Created! Redirecting...",
+        alertText: action.payload.alertText,
       };
 
-    case Action.REGISTER_USER_ERROR:
+    case Action.AUTHENTICATE_USER_ERROR:
       return {
         ...state,
         isLoading: false,

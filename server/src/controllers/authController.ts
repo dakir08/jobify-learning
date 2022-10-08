@@ -32,7 +32,31 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  res.send("login user");
+  const { email, password } = req.body;
+
+  // Check if missing email and password
+  if (!email || !password) {
+    throw new CustomApiError("Please provide all values");
+  }
+
+  // Find exist user
+  const user = await User.findOne({ email }).select("+password");
+  // Check if not found user
+  if (!user) {
+    throw new CustomApiError("Invalid Credentials", StatusCodes.UNAUTHORIZED);
+  }
+
+  // compare password
+  const isMatchedPassword = await user.comparePassword(password);
+  // Check if password not correct
+  if (!isMatchedPassword) {
+    throw new CustomApiError("Invalid Credentials", StatusCodes.UNAUTHORIZED);
+  }
+
+  // create token and send back to response
+  const token = user.createJwt();
+  user.password = "";
+  res.status(StatusCodes.OK).json({ user, token });
 };
 
 export const updateUser = async (req: Request, res: Response) => {

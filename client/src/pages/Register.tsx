@@ -14,7 +14,6 @@ import { RegisterPage } from "../components/wrappers/RegisterPage";
 import { Action } from "../context/actions";
 import { useAppContext } from "../context/appContext";
 import { useDispatch } from "../context/dispatchContext";
-import { RegiserUser } from "../models/User";
 import { addUserToLocalStorage } from "../utils/localStorageUtils";
 
 const initialState = {
@@ -28,7 +27,7 @@ export const Register: FunctionComponent = () => {
   const [values, setValues] = useState(initialState);
 
   const { isLoading, showAlert, token } = useAppContext();
-  const { clearAlert, displayAlert, registerUser } = useRegisterLogic();
+  const { authenticateUser, clearAlert, displayAlert } = useSetupUserLogic();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,11 +59,19 @@ export const Register: FunctionComponent = () => {
     const currentUser = { name, email, password };
 
     if (isMember) {
-      console.log("already a member");
+      authenticateUser({
+        currentUser,
+        endpoint: "login",
+        alertText: "Logging Successful! Redirecting...",
+      });
       return;
     }
 
-    registerUser(currentUser);
+    authenticateUser({
+      currentUser,
+      endpoint: "register",
+      alertText: "User Created! Redirecting...",
+    });
   };
 
   return (
@@ -107,7 +114,7 @@ export const Register: FunctionComponent = () => {
   );
 };
 
-const useRegisterLogic = () => {
+const useSetupUserLogic = () => {
   const dispatch = useDispatch();
 
   const displayAlert = () => {
@@ -118,8 +125,16 @@ const useRegisterLogic = () => {
     setTimeout(() => dispatch({ type: Action.CLEAR_ALERT }), 3000);
   };
 
-  const registerUser = async (currentUser: RegiserUser) => {
-    dispatch({ type: Action.REGISTER_USER_BEGIN });
+  const authenticateUser = async ({
+    alertText,
+    currentUser,
+    endpoint,
+  }: {
+    currentUser: any;
+    endpoint: string;
+    alertText: string;
+  }) => {
+    dispatch({ type: Action.AUTHENTICATE_USER_BEGIN });
 
     try {
       const response = await axios.post<{
@@ -130,19 +145,18 @@ const useRegisterLogic = () => {
           lastName: string;
           location: string;
         };
-      }>("http://localhost:5000/api/v1/auth/register", currentUser);
+      }>(`http://localhost:5000/api/v1/auth/${endpoint}`, currentUser);
       const { token, user } = response.data;
 
       dispatch({
-        type: Action.REGISTER_USER_SUCCESS,
-        payload: { user, token },
+        type: Action.AUTHENTICATE_USER_SUCCESS,
+        payload: { user, token, alertText },
       });
 
       addUserToLocalStorage({ user, token });
     } catch (error: any) {
-      console.log(error);
       dispatch({
-        type: Action.REGISTER_USER_ERROR,
+        type: Action.AUTHENTICATE_USER_ERROR,
         payload: { msg: error.response.data.msg },
       });
     }
@@ -150,5 +164,5 @@ const useRegisterLogic = () => {
     clearAlert();
   };
 
-  return { displayAlert, clearAlert, registerUser };
+  return { displayAlert, clearAlert, authenticateUser };
 };

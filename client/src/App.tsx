@@ -1,6 +1,5 @@
 import { Landing } from "./pages/Landing";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { Dashboard } from "./pages/Dashboard";
 import { Register } from "./pages/Register";
 import { Error404 } from "./pages/Error";
 
@@ -13,7 +12,7 @@ const App = () => {
         <Link to="/landing">Landing</Link>
       </nav>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<></>} />
         <Route path="/register" element={<Register />} />
         <Route path="/landing" element={<Landing />} />
         <Route path="*" element={<Error404 />} />

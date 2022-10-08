@@ -13,6 +13,7 @@ export interface User {
 
 export interface UserMethods {
   createJwt(): string;
+  comparePassword(userPassword: string): boolean;
 }
 
 const schema = new Schema<User>({
@@ -65,6 +66,11 @@ schema.method("createJwt", function createJwt() {
       expiresIn: process.env.JWT_LIFETIME,
     }
   );
+});
+
+schema.method("comparePassword", async function (userPassword: string) {
+  const isMatch: boolean = await bcrypt.compare(userPassword, this.password);
+  return isMatch;
 });
 
 type UserModel = Model<User, {}, UserMethods>;

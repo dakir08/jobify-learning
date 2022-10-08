@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import "express-async-errors";
 import cors from "cors";
+import morgan from "morgan";
 
 // db and authenticate
 import { connectDB } from "./db/connect";
@@ -20,6 +21,10 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
+
+if (process.env.NODE_ENV !== "production") {
+  app.use(morgan("dev"));
+}
 
 app.use(express.json());
 
